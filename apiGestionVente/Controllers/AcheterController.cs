@@ -19,14 +19,21 @@ namespace apiGestionVente.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Acheter>> GetAcheters()
         {
-            return _context.Achats.ToList();
-        }
+            var acheter = _context.Achats
+                .Include(a => a.Client)
+                .Include(a => a.Voiture)
+                .ToList();
+            
+            return acheter;
+            }
 
         [HttpGet("{id}")]
         public ActionResult<Acheter> GetAcheter(string id)
         {
             var acheter = _context.Achats
-                .Where(a => a.IDCLIENT.Contains(id) || a.NUMSERIE.Contains(id))
+                .Include(a => a.Client)
+                .Include(a => a.Voiture)
+                .Where(a => a.NUMACHAT.Contains(id) || a.IDCLIENT.Contains(id) || a.NUMSERIE.Contains(id))
                 .ToList();
 
             if (acheter == null)
@@ -37,39 +44,49 @@ namespace apiGestionVente.Controllers
             return Ok(acheter);
         }
 
-        private string GenerateNextIDCLIENT()
+        private string GenerateNextNUMACHAT()
         {
-            var lastIDCLIENT = _context.Achats
-                .OrderByDescending(a => a.IDCLIENT)
-                .Select(a => a.IDCLIENT)
+            var lastNUMACHAT = _context.Achats
+                .OrderByDescending(a => a.NUMACHAT)
+                .Select(a => a.NUMACHAT)
                 .FirstOrDefault();
 
-            if (lastIDCLIENT == null)
+            if (lastNUMACHAT == null)
             {
-                return "CLT001";
+                return "ACH001";
             }
 
-            int lastNumber = int.Parse(lastIDCLIENT.Substring(3));
+            int lastNumber = int.Parse(lastNUMACHAT.Substring(3));
             string nextNumber = (lastNumber + 1).ToString("D3");
-            string nextIDCLIENT = "CLT" + nextNumber;
+            string nextNUMACHAT = "ACH" + nextNumber;
 
-            return nextIDCLIENT;
+            return nextNUMACHAT;
         }
-
+        
         [HttpPost]
-        public IActionResult CreateAcheter(Acheter acheter)
+        public IActionResult CreateAchat(Acheter achat)
         {
-            acheter.IDCLIENT = GenerateNextIDCLIENT();
-            _context.Achats.Add(acheter);
+            achat.NUMACHAT = GenerateNextNUMACHAT();
+            if (achat.NUMSERIE != null && !string.IsNullOrEmpty(achat.Voiture.NUMSERIE))
+            {
+                _context.Attach(achat.Voiture);
+            }
+
+            if (achat.Client != null && !string.IsNullOrEmpty(achat.Client.IDCLIENT))
+            {
+                _context.Attach(achat.Client);
+            }
+            _context.Achats.Add(achat);
             _context.SaveChanges();
 
-            return CreatedAtAction(nameof(GetAcheter), new { id = acheter.IDCLIENT }, acheter);
+            return CreatedAtAction(nameof(GetAcheter), new { id = achat.NUMACHAT }, achat);
         }
+
 
         [HttpPut("{id}")]
         public IActionResult UpdateAcheter(string id, Acheter acheter)
         {
-            if (id != acheter.IDCLIENT)
+            if (id != acheter.NUMACHAT)
             {
                 return BadRequest();
             }

@@ -14,17 +14,15 @@ namespace apiGestionVente.Data
         public DbSet<Client> Clients { get; set; }
         public DbSet<Categorie> Categories { get; set; }
         public DbSet<Acheter> Achats { get; set; }
-        
-        public DbSet<Commmande> Commandes { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Acheter>().HasKey(a => new { a.IDCLIENT, a.NUMSERIE });
-            modelBuilder.Entity<Commmande>().HasKey(com => new { com.IDCLIENT, com.NUMSERIE });
+            modelBuilder.Entity<Acheter>().HasKey(a => new { a.NUMACHAT });
             modelBuilder.Entity<Voiture>().HasKey(voiture => new { voiture.NUMSERIE });
             modelBuilder.Entity<Categorie>().HasKey(cat => new { cat.IDCATEGORIE});
             modelBuilder.Entity<Client>().HasKey(client => new { client.IDCLIENT });
             modelBuilder.Entity<Marque>().HasKey(mar => new { mar.IDMARQUE });
+           
 
         }
     }

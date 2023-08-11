@@ -27,48 +27,79 @@ namespace apiGestionVente.Controllers
 
             if (lastNUMSERIE == null)
             {
-                return "NUM001";
+                return "WWW001";
             }
 
             int lastNumber = int.Parse(lastNUMSERIE.Substring(3));
             string nextNumber = (lastNumber + 1).ToString("D3");
-            string nextNUMSERIE = "NUM" + nextNumber;
+            string nextNUMSERIE = "WWW" + nextNumber;
 
             return nextNUMSERIE;
         }
-
         [HttpGet]
-        public ActionResult<IEnumerable<Voiture>> GetVoitures()
+        public ActionResult<IEnumerable<VoitureGroup>> GetVoitures()
         {
-            return _context.Voitures.ToList();
-        }
-
-        [HttpGet("{id}")]
-        public ActionResult<Voiture> GetVoiture(string id)
-        {
-            var voiture = _context.Voitures
-                .Where(v => v.NUMSERIE.Contains(id) || v.DESIGNVOITURE.Contains(id) || v.IDMARQUE.Contains(id) || 
-                            v.IDCATEGORIE.Contains(id) || v.TYPE.Contains(id) || v.BOITEVITESSE.Contains(id)
-                            )
+            var allVoitures = _context.Voitures
+                .Include(v => v.Categorie)
+                .Include(v => v.Marque)
+                .Where(v => v.STATUS == 0)
                 .ToList();
 
-            if (voiture == null)
-            {
-                return NotFound();
-            }
+            var groupedVoitures = allVoitures
+                .GroupBy(v => new { v.DESIGNVOITURE })
+                .Select(group => new VoitureGroup
+                {
+                    Designation =  group.FirstOrDefault()?.DESIGNVOITURE ?? "Voiture inconnue",
+                    Count = group.Count(),
+                    Voitures = group.ToList()
+                })
+                .ToList();
 
-            return Ok(voiture);
+            return groupedVoitures;
         }
+        
+        [HttpGet("{id}")]
+        public ActionResult<IEnumerable<VoitureGroup>> GetVoiture(string id)
+        {
+            var voitures = _context.Voitures
+                .Include(v => v.Categorie)
+                .Include(v => v.Marque)
+                .Where(v => v.NUMSERIE.Contains(id) || v.DESIGNVOITURE.Contains(id) || v.IDMARQUE.Contains(id) || 
+                            v.IDCATEGORIE.Contains(id) || v.TYPE.Contains(id) || v.BOITEVITESSE.Contains(id))
+                .ToList();
 
+            var groupedVoitures = voitures
+                .GroupBy(v => new { v.IDMARQUE, v.IDCATEGORIE })
+                .Select(group => new VoitureGroup
+                {
+                    Designation = group.FirstOrDefault()?.DESIGNVOITURE ?? "Voiture inconue",
+                    Count = group.Count(),
+                    Voitures = group.ToList()
+                })
+                .ToList();
+
+            return groupedVoitures;
+        }
+        
         [HttpPost]
         public IActionResult CreateVoiture(Voiture voiture)
         {
             voiture.NUMSERIE = GenerateNextNUMSERIE();
+            if (voiture.Categorie != null && !string.IsNullOrEmpty(voiture.Categorie.IDCATEGORIE))
+            {
+                _context.Attach(voiture.Categorie);
+            }
+
+            if (voiture.Marque != null && !string.IsNullOrEmpty(voiture.Marque.IDMARQUE))
+            {
+                _context.Attach(voiture.Marque);
+            }
             _context.Voitures.Add(voiture);
             _context.SaveChanges();
 
             return CreatedAtAction(nameof(GetVoiture), new { id = voiture.NUMSERIE }, voiture);
         }
+
 
         [HttpPut("{id}")]
         public IActionResult UpdateVoiture(string id, Voiture voiture)
