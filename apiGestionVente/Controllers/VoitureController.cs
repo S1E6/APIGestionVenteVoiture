@@ -46,7 +46,7 @@ namespace apiGestionVente.Controllers
                 .ToList();
 
             var groupedVoitures = allVoitures
-                .GroupBy(v => new { v.DESIGNVOITURE })
+                .GroupBy(v => new { v.DESIGNVOITURE, v.Categorie, v.Marque })
                 .Select(group => new VoitureGroup
                 {
                     Designation =  group.FirstOrDefault()?.DESIGNVOITURE ?? "Voiture inconnue",

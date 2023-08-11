@@ -24,7 +24,7 @@ namespace apiGestionVente.Controllers
                 .Include(a => a.Voiture)
                 .ToList();
             
-            return acheter;
+            return Ok(acheter);
             }
 
         [HttpGet("{id}")]
