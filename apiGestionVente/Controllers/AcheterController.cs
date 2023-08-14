@@ -76,6 +76,7 @@ namespace apiGestionVente.Controllers
             {
                 _context.Attach(achat.Client);
             }
+            achat.DATEACHAT = DateTime.Now;
             _context.Achats.Add(achat);
             _context.SaveChanges();
 

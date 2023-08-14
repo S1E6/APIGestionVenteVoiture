@@ -8,6 +8,7 @@ public class Acheter
     public int? QTE { get; set; }
     public long? RESTE { get; set; }
     public long? SOMME { get; set; }
+    public DateTime DATEACHAT { get; set; }
     
     [ForeignKey("IDCLIENT")] 
     

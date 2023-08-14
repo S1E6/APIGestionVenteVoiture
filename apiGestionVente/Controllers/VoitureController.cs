@@ -46,7 +46,7 @@ namespace apiGestionVente.Controllers
                 .ToList();
 
             var groupedVoitures = allVoitures
-                .GroupBy(v => new { v.DESIGNVOITURE, v.Categorie, v.Marque })
+                .GroupBy(v => new { v.DESIGNVOITURE, v.Categorie, v.Marque, v.TYPE, v.BOITEVITESSE })
                 .Select(group => new VoitureGroup
                 {
                     Designation =  group.FirstOrDefault()?.DESIGNVOITURE ?? "Voiture inconnue",
@@ -57,28 +57,18 @@ namespace apiGestionVente.Controllers
 
             return groupedVoitures;
         }
-        
+
         [HttpGet("{id}")]
-        public ActionResult<IEnumerable<VoitureGroup>> GetVoiture(string id)
+        public List<Voiture> GetVoiture(string id)
         {
             var voitures = _context.Voitures
                 .Include(v => v.Categorie)
                 .Include(v => v.Marque)
-                .Where(v => v.NUMSERIE.Contains(id) || v.DESIGNVOITURE.Contains(id) || v.IDMARQUE.Contains(id) || 
-                            v.IDCATEGORIE.Contains(id) || v.TYPE.Contains(id) || v.BOITEVITESSE.Contains(id))
+                .Where(v => v.NUMSERIE.Contains(id) )
                 .ToList();
+            
 
-            var groupedVoitures = voitures
-                .GroupBy(v => new { v.IDMARQUE, v.IDCATEGORIE })
-                .Select(group => new VoitureGroup
-                {
-                    Designation = group.FirstOrDefault()?.DESIGNVOITURE ?? "Voiture inconue",
-                    Count = group.Count(),
-                    Voitures = group.ToList()
-                })
-                .ToList();
-
-            return groupedVoitures;
+            return voitures;
         }
         
         [HttpPost]
