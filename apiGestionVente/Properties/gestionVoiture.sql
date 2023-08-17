@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS `voitures` (
 --
 
 INSERT INTO `voitures` (`NUMSERIE`, `IDCATEGORIE`, `IDMARQUE`, `DESIGNVOITURE`, `PRIX`, `IMG`, `TYPE`, `BOITEVITESSE`, `STATUS`) VALUES
-('WWW011', 'CAT012', 'MAR010', 'Daf', 500000000, 'string', 'Diesel', 'Automatique', 0),
+('WWW011', 'CAT012', 'MAR010', 'Daf', 500000000, 'string', 'Diesel', 'Automatique', 1),
 ('WWW010', 'CAT004', 'MAR009', 'Sprinter 312', 45000000, 'string', 'Diesel', 'Manuelle', 1),
 ('WWW009', 'CAT008', 'MAR009', 'ACTROS', 100000000, 'string', 'Diesel', 'Automatique', 0),
 ('WWW008', 'CAT008', 'MAR001', 'FH 16', 100000000, 'string', 'Diesel', 'Automatique', 0),
