@@ -1,162 +1,186 @@
-DROP DATABASE IF EXISTS gestionvente;
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1:3306
+-- Generation Time: Aug 17, 2023 at 02:19 PM
+-- Server version: 8.0.31
+-- PHP Version: 8.0.26
 
-CREATE DATABASE IF NOT EXISTS gestionvente;
-USE gestionvente;
-# -----------------------------------------------------------------------------
-#       TABLE : MARQUES
-# -----------------------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS MARQUES
- (
-   IDMARQUE CHAR(32) NOT NULL  ,
-   DESIGNMARQUE CHAR(32) NULL  
-   , PRIMARY KEY (IDMARQUE) 
- ) 
- comment = "";
-
-# -----------------------------------------------------------------------------
-#       TABLE : VOITURES
-# -----------------------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS VOITURES
- (
-   NUMSERIE CHAR(32) NOT NULL  ,
-   IDCATEGORIE CHAR(32) NOT NULL  ,
-   IDMARQUE CHAR(32) NOT NULL  ,
-   DESIGNVOITURE CHAR(32) NULL  ,
-   PRIX BIGINT(15) NULL  ,
-   IMG CHAR(32) NULL  ,
-   TYPE CHAR(32) NULL  ,
-   BOITEVITESSE CHAR(32) NULL ,
-   STATUS INTEGER NOT NULL 
- , PRIMARY KEY (NUMSERIE) 
- ) 
- comment = "";
-
-# -----------------------------------------------------------------------------
-#       INDEX DE LA TABLE VOITURES
-# -----------------------------------------------------------------------------
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 
-CREATE  INDEX I_FK_VOITURES_CATEGORIES
-     ON VOITURES (IDCATEGORIE ASC);
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
-CREATE  INDEX I_FK_VOITURES_MARQUES
-     ON VOITURES (IDMARQUE ASC);
+--
+-- Database: `gestionvente`
+--
 
-# -----------------------------------------------------------------------------
-#       TABLE : CLIENTS
-# -----------------------------------------------------------------------------
+-- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS CLIENTS
- (
-   IDCLIENT CHAR(32) NOT NULL  ,
-   NOM CHAR(32) NULL  ,
-   PRENOMS CHAR(32) NULL  ,
-   ADRESSE CHAR(32) NULL  ,
-   MAIL CHAR(32) NULL  
-   , PRIMARY KEY (IDCLIENT) 
- ) 
- comment = "";
+--
+-- Table structure for table `achats`
+--
 
-# -----------------------------------------------------------------------------
-#       TABLE : CATEGORIES
-# -----------------------------------------------------------------------------
+DROP TABLE IF EXISTS `achats`;
+CREATE TABLE IF NOT EXISTS `achats` (
+  `NUMACHAT` char(10) NOT NULL,
+  `IDCLIENT` char(32) NOT NULL,
+  `NUMSERIE` char(32) NOT NULL,
+  `QTE` int DEFAULT NULL,
+  `RESTE` bigint DEFAULT NULL,
+  `SOMME` bigint DEFAULT NULL,
+  `DATEACHAT` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`NUMACHAT`),
+  KEY `I_FK_ACHATS_CLIENTS` (`IDCLIENT`),
+  KEY `I_FK_ACHATS_VOITURES` (`NUMSERIE`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE IF NOT EXISTS CATEGORIES
- (
-   IDCATEGORIE CHAR(32) NOT NULL  ,
-   DESIGNCAT CHAR(32) NULL  
-   , PRIMARY KEY (IDCATEGORIE) 
- ) 
- comment = "";
+--
+-- Dumping data for table `achats`
+--
 
+INSERT INTO `achats` (`NUMACHAT`, `IDCLIENT`, `NUMSERIE`, `QTE`, `RESTE`, `SOMME`, `DATEACHAT`) VALUES
+('ACH010', 'CLT003', 'WWW007', 3, 0, 25000000, '2023-06-26 11:45:00'),
+('ACH008', 'CLT001', 'WWW004', 2, 0, 25000000, '2023-06-26 13:15:00'),
+('ACH004', 'CLT001', 'WWW004', 2, 0, 25000000, '2023-02-26 13:15:00'),
+('ACH007', 'CLT003', 'WWW002', 3, 0, 180000000, '2023-04-26 11:45:00'),
+('ACH016', 'CLT001', 'WWW010', 2, 0, 45000000, '2023-01-26 09:00:00'),
+('ACH011', 'CLT001', 'WWW010', 2, 0, 45000000, '2023-05-26 09:00:00'),
+('ACH005', 'CLT001', 'WWW001', 2, 0, 40000000, '2023-03-26 09:00:00'),
+('ACH003', 'CLT003', 'WWW002', 3, 0, 180000000, '2023-02-26 11:45:00'),
+('ACH009', 'CLT002', 'WWW009', 1, 0, 100000000, '2023-05-26 10:30:00'),
+('ACH021', 'CLT004', 'WWW004', 1, 25000000, 25000000, '2023-08-17 17:00:33'),
+('ACH017', 'CLT002', 'WWW006', 1, 0, 23000000, '2023-02-26 10:30:00'),
+('ACH001', 'CLT001', 'WWW001', 2, 0, 40000000, '2023-01-26 09:00:00'),
+('ACH020', 'CLT003', 'WWW010', 1, 41000000, 40000000, '2023-08-17 15:55:09'),
+('ACH018', 'CLT003', 'WWW002', 3, 0, 180000000, '2023-07-26 11:45:00'),
+('ACH019', 'CLT001', 'WWW004', 2, 0, 25000000, '2023-07-26 13:15:00');
 
-# -----------------------------------------------------------------------------
-#       TABLE : ACHATS
-# -----------------------------------------------------------------------------
+-- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS ACHATS
- (
-   NUMACHAT CHAR(10) NOT NULL ,
-   IDCLIENT CHAR(32) NOT NULL  ,
-   NUMSERIE CHAR(32) NOT NULL  ,
-   QTE INTEGER NULL  ,
-   RESTE BIGINT(15) NULL  ,
-   SOMME BIGINT(15) NULL  ,
-   DATEACHAT DATETIME
-   , PRIMARY KEY (NUMACHAT) 
- ) 
- comment = "";
+--
+-- Table structure for table `categories`
+--
 
-# -----------------------------------------------------------------------------
-#       INDEX DE LA TABLE ACHATS
-# -----------------------------------------------------------------------------
+DROP TABLE IF EXISTS `categories`;
+CREATE TABLE IF NOT EXISTS `categories` (
+  `IDCATEGORIE` char(32) NOT NULL,
+  `DESIGNCAT` char(32) DEFAULT NULL,
+  PRIMARY KEY (`IDCATEGORIE`),
+  UNIQUE KEY `DESIGNCAT` (`DESIGNCAT`),
+  KEY `IDCATEGORIE` (`IDCATEGORIE`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `categories`
+--
 
-CREATE  INDEX I_FK_ACHATS_CLIENTS
-     ON ACHATS (IDCLIENT ASC);
+INSERT INTO `categories` (`IDCATEGORIE`, `DESIGNCAT`) VALUES
+('CAT008', 'Camion'),
+('CAT002', '4*4'),
+('CAT003', 'SUV'),
+('CAT004', 'BUS'),
+('CAT011', 'légère'),
+('CAT012', 'Poids lourd');
 
-CREATE  INDEX I_FK_ACHATS_VOITURES
-     ON ACHATS (NUMSERIE ASC);
+-- --------------------------------------------------------
 
+--
+-- Table structure for table `clients`
+--
 
-# -----------------------------------------------------------------------------
-#       CREATION DES REFERENCES DE TABLE
-# -----------------------------------------------------------------------------
+DROP TABLE IF EXISTS `clients`;
+CREATE TABLE IF NOT EXISTS `clients` (
+  `IDCLIENT` char(32) NOT NULL,
+  `NOM` char(32) DEFAULT NULL,
+  `PRENOMS` char(32) DEFAULT NULL,
+  `ADRESSE` char(32) DEFAULT NULL,
+  `MAIL` char(32) DEFAULT NULL,
+  PRIMARY KEY (`IDCLIENT`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `clients`
+--
 
-ALTER TABLE VOITURES 
-  ADD FOREIGN KEY FK_VOITURES_CATEGORIES (IDCATEGORIE)
-      REFERENCES CATEGORIES (IDCATEGORIE) ;
+INSERT INTO `clients` (`IDCLIENT`, `NOM`, `PRENOMS`, `ADRESSE`, `MAIL`) VALUES
+('CLT004', 'Mihajasoa', 'Léa', 'Antsirabe', 'valsumihaja@gmail.com'),
+('CLT003', 'Rakoto', 'Malala', 'Ankofafa', 'rako@gmail.com'),
+('CLT001', 'RAFANOMEZANTSOA', 'Alfredo', 'Manaotsara 1', 'elyse.alfredo@gmail.com');
 
+-- --------------------------------------------------------
 
-ALTER TABLE VOITURES 
-  ADD FOREIGN KEY FK_VOITURES_MARQUES (IDMARQUE)
-      REFERENCES MARQUES (IDMARQUE) ;
+--
+-- Table structure for table `marques`
+--
 
-ALTER TABLE ACHATS 
-  ADD FOREIGN KEY FK_ACHATS_CLIENTS (IDCLIENT)
-      REFERENCES CLIENTS (IDCLIENT) ;
+DROP TABLE IF EXISTS `marques`;
+CREATE TABLE IF NOT EXISTS `marques` (
+  `IDMARQUE` char(32) NOT NULL,
+  `DESIGNMARQUE` char(32) DEFAULT NULL,
+  PRIMARY KEY (`IDMARQUE`),
+  UNIQUE KEY `DESIGNMARQUE` (`DESIGNMARQUE`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `marques`
+--
 
-ALTER TABLE ACHATS 
-  ADD FOREIGN KEY FK_ACHATS_VOITURES (NUMSERIE)
-      REFERENCES VOITURES (NUMSERIE) ;
+INSERT INTO `marques` (`IDMARQUE`, `DESIGNMARQUE`) VALUES
+('MAR001', 'Volvo'),
+('MAR002', 'Kia'),
+('MAR003', 'Hyundai'),
+('MAR004', 'SangYang'),
+('MAR005', 'VolsksWagen'),
+('MAR009', 'Mercedes Benz'),
+('MAR008', 'Toyota'),
+('MAR010', 'Scania');
 
-use gestionvente ;
+-- --------------------------------------------------------
 
-INSERT INTO MARQUES (IDMARQUE, DESIGNMARQUE) VALUES
-                                                 ('MAR001', 'Volvo'),
-                                                 ('MAR002', 'Kia');
+--
+-- Table structure for table `voitures`
+--
 
+DROP TABLE IF EXISTS `voitures`;
+CREATE TABLE IF NOT EXISTS `voitures` (
+  `NUMSERIE` char(32) NOT NULL,
+  `IDCATEGORIE` char(32) NOT NULL,
+  `IDMARQUE` char(32) NOT NULL,
+  `DESIGNVOITURE` char(32) DEFAULT NULL,
+  `PRIX` bigint DEFAULT NULL,
+  `IMG` char(32) DEFAULT NULL,
+  `TYPE` char(32) DEFAULT NULL,
+  `BOITEVITESSE` char(32) DEFAULT NULL,
+  `STATUS` int NOT NULL,
+  PRIMARY KEY (`NUMSERIE`),
+  KEY `I_FK_VOITURES_CATEGORIES` (`IDCATEGORIE`),
+  KEY `I_FK_VOITURES_MARQUES` (`IDMARQUE`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO CATEGORIES (IDCATEGORIE, DESIGNCAT) VALUES
-                                                    ('CAT001', 'Camion'),
-                                                    ('CAT002', '4*4'),
-                                                    ('CAT003', 'SUV');
+--
+-- Dumping data for table `voitures`
+--
 
-INSERT INTO VOITURES (NUMSERIE, IDCATEGORIE, IDMARQUE, DESIGNVOITURE, PRIX, IMG, TYPE, BOITEVITESSE, STATUS) VALUES
-                                                                                                         ('WWW001', 'CAT001', 'MAR001', 'FH 16', 300000, 'volvo_camion_1.jpg', 'Essence', 'Manuelle', 0),
-                                                                                                         ('WWW002', 'CAT001', 'MAR001', 'FH 16', 300000, 'volvo_camion_2.jpg', 'Diesel', 'Automatique', 0),
-                                                                                                         ('WWW003', 'CAT002', 'MAR001', 'CX 60', 40000, 'volvo_4x4_1.jpg', 'Eléctrique', 'Automatique', 0),
-                                                                                                         ('WWW004', 'CAT002', 'MAR001', 'XC 60', 40000, 'volvo_4x4_2.jpg', 'Diesel', 'Automatique', 0),
-                                                                                                         ('WWW005', 'CAT003', 'MAR001', 'XC 90', 35000, 'volvo_suv_1.jpg', 'Essence', 'Manuelle', 0),
-                                                                                                         ('WWW006', 'CAT003', 'MAR001', 'CX 90', 35000, 'volvo_suv_2.jpg', 'Eléctrique', 'Automatique', 0),
-                                                                                                         ('WWW007', 'CAT001', 'MAR002', 'K2700', 280000, 'kia_camion_1.jpg', 'Essence', 'Manuelle', 0),
-                                                                                                         ('WWW008', 'CAT001', 'MAR002', 'K2700', 280000, 'kia_camion_2.jpg', 'Diesel', 'Automatique', 0),
-                                                                                                         ('WWW009', 'CAT002', 'MAR002', 'SPORTAGE', 40000, 'kia_4x4_1.jpg', 'Essence', 'Manuelle', 0),
-                                                                                                         ('WWW010', 'CAT002', 'MAR002', 'SPORTAGE', 40000, 'kia_4x4_2.jpg', 'Diesel', 'Automatique', 0),
-                                                                                                         ('WWW011', 'CAT003', 'MAR002', 'SORENTO', 35000, 'kia_suv_1.jpg', 'Essence', 'Manuelle', 0),
-                                                                                                         ('WWW012', 'CAT003', 'MAR002', 'SORENTO', 35000, 'kia_suv_2.jpg', 'Diesel', 'Automatique', 0);
-INSERT INTO CLIENTS (IDCLIENT, NOM, PRENOMS, ADRESSE, MAIL) VALUES
-                                                                ('CLT001', 'Dupont', 'Jean', '123 Rue de la Republique', 'jean.dupont@example.com'),
-                                                                ('CLT002', 'Martin', 'Sophie', '456 Avenue des Fleurs', 'sophie.martin@example.com'),
-                                                                ('CLT003', 'Lefevre', 'Pierre', '789 Chemin du Lac', 'pierre.lefevre@example.com');
+INSERT INTO `voitures` (`NUMSERIE`, `IDCATEGORIE`, `IDMARQUE`, `DESIGNVOITURE`, `PRIX`, `IMG`, `TYPE`, `BOITEVITESSE`, `STATUS`) VALUES
+('WWW011', 'CAT012', 'MAR010', 'Daf', 500000000, 'string', 'Diesel', 'Automatique', 0),
+('WWW010', 'CAT004', 'MAR009', 'Sprinter 312', 45000000, 'string', 'Diesel', 'Manuelle', 1),
+('WWW009', 'CAT008', 'MAR009', 'ACTROS', 100000000, 'string', 'Diesel', 'Automatique', 0),
+('WWW008', 'CAT008', 'MAR001', 'FH 16', 100000000, 'string', 'Diesel', 'Automatique', 0),
+('WWW006', 'CAT003', 'MAR003', 'Starex', 23000000, 'string', 'Diesel', 'Manuelle', 0),
+('WWW005', 'CAT011', 'MAR002', 'Pride', 20000000, 'string', 'Essence', 'Manuelle', 0),
+('WWW004', 'CAT011', 'MAR005', 'Golf', 25000000, 'string', 'Diesel', 'Manuelle', 1),
+('WWW003', 'CAT011', 'MAR005', 'Golf', 40000000, 'string', 'Diesel', 'Manuelle', 0),
+('WWW002', 'CAT002', 'MAR008', 'Prado', 180000000, 'string', 'Diesel', 'Automatique', 0),
+('WWW001', 'CAT002', 'MAR004', 'Rexton', 40000000, 'string', 'Diesel', 'Automatique', 0);
+COMMIT;
 
-
-INSERT INTO ACHATS (NUMACHAT, IDCLIENT, NUMSERIE, QTE, RESTE, SOMME, DATEACHAT) VALUES
-                                                                                    ('ACH001', 'CLT001', 'WWW001', 2, 6000, 4000, '2023-07-26 09:00:00'),
-                                                                                    ('ACH002', 'CLT002', 'WWW003', 1, 4000, 4000, '2023-07-26 10:30:00'),
-                                                                                    ('ACH003', 'CLT003', 'WWW008', 3, 9300, 9300, '2023-07-26 11:45:00'),
-                                                                                    ('ACH004', 'CLT001', 'WWW011', 2, 6400, 6400, '2023-07-26 13:15:00');
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
